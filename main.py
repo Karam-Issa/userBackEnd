@@ -7,7 +7,7 @@ import schemas as _schemas
 import services as _services
 import jwt
 import requests
-
+ #testing git
 app = _fastapi.FastAPI()
 _JWT_SECRET = "thisisnotverysafe"
 @app.post("/api/v1/regester")
