@@ -6,7 +6,7 @@ import sqlalchemy.orm as _orm
 import schemas as _schemas
 import services as _services
 import jwt
-import requests
+#import requests
  #testing git
 app = _fastapi.FastAPI()
 _JWT_SECRET = "thisisnotverysafe"
