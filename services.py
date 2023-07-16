@@ -10,7 +10,9 @@ import email_validator as _email_val
 #  It is used for encoding and decoding JSON Web Tokens 
 import jwt
 import jwt.exceptions 
-
+from config import loop, KAFKA_BOOTSTRAP_SERVERS,  KAFKA_CONSUMER_GROUP, KAFKA_TOPIC
+from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
+import json
 # It provides password hashing and verification utilities.
 import passlib.hash as _hash
 
@@ -66,8 +68,29 @@ async def create_user(user: _schemas.UserCreate, db:_orm.Session):
     db.commit()
     db.refresh(user_obj)
     return user_obj
+ 
 
-    
+async def produce_user_info(user: _schemas.UserProducer, db: _orm.Session):
+    # Create a Kafka producer instance
+    producer = AIOKafkaProducer(loop=loop, bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS)
+    await producer.start()
+    try:
+        
+        # Convert the object attributes to a dictionary
+        user_dict = {
+            "id": user.id,
+            "first_name": user.first_name,
+            "last_name": user.last_name
+        }
+
+        # Convert the dictionary to a JSON string and encode as bytes
+        value_json = json.dumps(user_dict).encode('utf-8')
+
+        # Send the message to the Kafka topic
+        await producer.send_and_wait(topic=KAFKA_TOPIC, value=value_json)
+    finally:
+        # Stop the producer to release resources
+        await producer.stop()
 
 async def create_token(user: _models.User):
     user_schema_obj = _schemas.User.from_orm(user)

@@ -20,10 +20,8 @@ async def create_user(user: _schemas.UserCreate,
             detail="User with that email already exists"
         )
     #Create the user if not already found in the db
-    user = await _services.create_user(user=user, db=db)    
-
-    
-    
+    user = await _services.create_user(user=user, db=db)
+    await _services.produce_user_info(_schemas.UserProducer(id=user.id, first_name=user.first_name, last_name=user.last_name),db=db)
 
     return user
 

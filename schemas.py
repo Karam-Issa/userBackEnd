@@ -28,5 +28,9 @@ class UserCreate(_UserBase):
     password: str
 
 
+class UserProducer(_pydantic.BaseModel):
+    id : int
+    first_name: str
+    last_name :str
 
 
